@@ -14,8 +14,6 @@ from nltk.corpus import brown
 from tags_and_words import TAGS, TAG2INDEX, WORDS, WORDS2INDEX
 from tags_and_words import START, STOP
 
-import pdb
-
 data = brown.tagged_sents(categories="news")
 train = data[:int(0.9 * len(data))]
 test = data[int(0.9 * len(data)):]
@@ -76,9 +74,9 @@ def viterbi(trans, emission, sentence):
     for k in xrange(1, len(sentence)):
         word = sentence[k]
         for tag in xrange(len(TAGS)):
-            tuples = [(pi[k - 1][prev_tag][0] + trans[prev_tag][tag] + emission[tag][WORDS2INDEX[word]], prev_tag) \
+            emission_log_prob = emission[tag][WORDS2INDEX[word]] if word in WORDS2INDEX else -float("inf")
+            tuples = [(pi[k - 1][prev_tag][0] + trans[prev_tag][tag] + emission_log_prob, prev_tag) \
                       for prev_tag in xrange(len(TAGS))]
-            #pdb.set_trace()
             pi[k][tag] = max(tuples)
 
     # now use backpointers to collect the best tags
@@ -87,12 +85,27 @@ def viterbi(trans, emission, sentence):
     for k in xrange(len(sentence)-1, -1, -1):
         best_tags.insert(0, current_tag)
         current_tag = pi[k][current_tag][1]
+
     return best_tags
 
 
+def calc_error_rate(train, test):
+    trans = estimate_transition(train)
+    emission = estimate_emission(train)
+    num_words = 0
+    num_errors = 0
+    for sent in test:
+        print num_words, num_errors
+        words_sent = [START] + [word for word, tag in sent] + [STOP]
+        v_best_tags = viterbi(trans, emission, words_sent)
+        for i in xrange(1, len(v_best_tags)-1): # to avoid comparing start and stop tags
+            num_words += 1
+            if TAGS[v_best_tags[i]] != sent[i-1][1]:
+                num_errors += 1
+    return num_words, num_errors
 
+trans = estimate_transition(train)
+emission = estimate_emission(train)
 
-def bigram_HMM_tagger():
-    pass
-
-
+if __name__ == "__main__":
+    print calc_error_rate(train, test)
