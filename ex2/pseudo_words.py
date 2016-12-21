@@ -118,6 +118,11 @@ def calc_error_rate(train, test):
 
 
 def build_confusion_matrix(train, test):
+    """
+    build a confusion matrix: a dictionary conf, in which
+    conf[tag1][tag2] counts how many instances were tagged tag1 by
+    our algorithm, while ground truth was tag2
+    """
     conf = collections.defaultdict(lambda: 0)
     trans = estimate_transition(train)
     emission = estimate_emission(train)
@@ -127,10 +132,8 @@ def build_confusion_matrix(train, test):
         pre_process_sentence(words_sent)
         words_sent = [START] + words_sent + [STOP]
         v_best_tags = viterbi(trans, emission, words_sent)
-        if 213 in v_best_tags:
-            return sent, v_best_tags, words_sent
-        for i in xrange(1, len(v_best_tags)-1):  # to avoid comparing start and stop tags
-            conf[(TAGS[v_best_tags[i]], sent[i-1][1])] += 1
+        for i in xrange(1, len(v_best_tags) - 1):  # to avoid comparing start and stop tags
+            conf[(TAGS[v_best_tags[i]], sent[i - 1][1])] += 1
     return conf
 
 if __name__ == "__main__":
