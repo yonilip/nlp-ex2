@@ -16,7 +16,6 @@ the total error rate.
 
 
 
-import numpy
 from nltk.corpus import brown
 
 
@@ -24,16 +23,18 @@ data = brown.tagged_sents(categories="news")
 train = data[:int(0.9*len(data))]
 test = data[int(0.9*len(data)):]
 
+
 def make_counts_dicts(data):
     counts_dict = dict()
     for sent in data:
-        for word,tag in sent:
+        for word, tag in sent:
             if word not in counts_dict:
                 counts_dict[word] = dict()
             if tag not in counts_dict[word]:
                 counts_dict[word][tag] = 0
             counts_dict[word][tag] += 1
     return counts_dict
+
 
 def tag_word(word, counts_dict):
     if word not in counts_dict:

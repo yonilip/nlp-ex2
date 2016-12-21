@@ -11,7 +11,7 @@ on the test set. Compute the error rate and compare it to the results from b)ii)
 and e)ii). For the results obtained using both pseudo-words and add-1 smoothing, build a
 confusion matrix and investigate the most frequent errors.
 '''
-
+import collections
 
 from pseudo_tags_and_words import *
 import math
@@ -80,6 +80,8 @@ def viterbi(trans, emission, sentence):
     for k in xrange(1, len(sentence)):
         word = sentence[k]
         for tag in xrange(len(TAGS)):
+            if word not in WORDS2INDEX:
+                print word
             emission_log_prob = emission[tag][WORDS2INDEX[word]] if word in WORDS2INDEX else -float("inf")
             tuples = [(pi[k - 1][prev_tag][0] + trans[prev_tag][tag] + emission_log_prob, prev_tag) \
                       for prev_tag in xrange(len(TAGS))]
@@ -101,7 +103,7 @@ def calc_error_rate(train, test):
     num_words = 0
     num_errors = 0
     for sent in test:
-        print num_words, num_errors
+        # print num_words, num_errors
         words_sent = [word for word, tag in sent]
         pre_process_sentence(words_sent)
         words_sent = [START] + words_sent + [STOP]
@@ -111,6 +113,23 @@ def calc_error_rate(train, test):
             if TAGS[v_best_tags[i]] != sent[i-1][1]:
                 num_errors += 1
     return num_words, num_errors
+
+
+def build_confusion_matrix(train, test):
+    conf = collections.defaultdict(lambda: 0)
+    trans = estimate_transition(train)
+    emission = estimate_emission(train)
+    for sent in test:
+        # print num_words, num_errors
+        words_sent = [word for word, tag in sent]
+        pre_process_sentence(words_sent)
+        words_sent = [START] + words_sent + [STOP]
+        v_best_tags = viterbi(trans, emission, words_sent)
+        if 213 in v_best_tags:
+            return sent, v_best_tags, words_sent
+        for i in xrange(1, len(v_best_tags)-1):  # to avoid comparing start and stop tags
+            conf[(TAGS[v_best_tags[i]], sent[i-1][1])] += 1
+    return conf
 
 if __name__ == "__main__":
     print calc_error_rate(train, test)

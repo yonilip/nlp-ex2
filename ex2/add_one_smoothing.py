@@ -9,6 +9,8 @@ rate and compare it to the results from b)ii) and c)iii).
 
 
 import math
+import pprint
+import collections
 from nltk.corpus import brown
 
 from tags_and_words import TAGS, TAG2INDEX, WORDS, WORDS2INDEX
@@ -108,6 +110,18 @@ def calc_error_rate(train, test):
                 num_errors += 1
     return num_words, num_errors
 
+def build_confusion_matrix(train, test):
+    conf = collections.defaultdict(lambda: 0)
+    trans = estimate_transition(train)
+    emission, min_probs = estimate_emission_and_minprob(train)
+    for sent in test:
+        words_sent = [START] + [word for word, tag in sent] + [STOP]
+        v_best_tags = viterbi(trans, emission, min_probs, words_sent)
+        for i in xrange(1, len(v_best_tags)-1): # to avoid comparing start and stop tags
+            conf[(TAGS[v_best_tags[i]], sent[i-1][1])] += 1
+    return pprint.pprint(conf, indent=4)
 
-if __name__ == "__main__":
-    print calc_error_rate(train, test)
+
+#if __name__ == "__main__":
+    # print calc_error_rate(train, test)
+
