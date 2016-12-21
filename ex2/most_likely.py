@@ -14,14 +14,11 @@ ii. Using the test set, compute the error rate for known words, for unknown word
 the total error rate.
 '''
 
-
-
 from nltk.corpus import brown
 
-
 data = brown.tagged_sents(categories="news")
-train = data[:int(0.9*len(data))]
-test = data[int(0.9*len(data)):]
+train = data[:int(0.9 * len(data))]
+test = data[int(0.9 * len(data)):]
 
 
 def make_counts_dicts(data):
@@ -41,7 +38,7 @@ def tag_word(word, counts_dict):
         return u'NN'
     else:
         tags = counts_dict[word]
-        return max(tags.keys(), key=lambda k:tags[k])
+        return max(tags.keys(), key=lambda k: tags[k])
 
 
 def calc_error_rate(train, test, only_unknown=False, only_known=False):
@@ -49,7 +46,7 @@ def calc_error_rate(train, test, only_unknown=False, only_known=False):
     num_words = 0
     num_errors = 0
     for sent in test:
-        for word,tag in sent:
+        for word, tag in sent:
             if only_unknown and word in counts:
                 continue
             if only_known and word not in counts:
@@ -57,6 +54,7 @@ def calc_error_rate(train, test, only_unknown=False, only_known=False):
             num_words += 1
             if tag_word(word, counts) != tag:
                 num_errors += 1
-    return float(num_errors) / num_words
+    return num_words, num_errors
 
-print calc_error_rate(train, test)
+
+# print calc_error_rate(train, test)

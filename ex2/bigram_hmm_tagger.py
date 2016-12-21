@@ -8,6 +8,7 @@ Implementation of a bigram HMM tagger
     iii. Run the algorithm from c)ii) on the test set. Compute the error rate and compare it to the
         results from b)ii).
 '''
+
 import math
 from nltk.corpus import brown
 
@@ -18,14 +19,17 @@ data = brown.tagged_sents(categories="news")
 train = data[:int(0.9 * len(data))]
 test = data[int(0.9 * len(data)):]
 
+
 def safe_log(x):
     if x == 0:
         return -float("inf")
     else:
         return math.log(x)
 
+
 def add_start_and_stop(sent):
     return [(START, u"START")] + sent + [(STOP, u"STOP")]
+
 
 def estimate_transition(train):
     """estimate the transition matrix
@@ -34,8 +38,8 @@ def estimate_transition(train):
     trans = [[0 for i in xrange(len(TAGS))] for j in xrange(len(TAGS))]
     for sent in train:
         new_sent = add_start_and_stop(sent)
-        for i in xrange(len(new_sent)-1):
-            tag1, tag2 = new_sent[i][1], new_sent[i+1][1]  # index 1 is the tag in the tuple of (word, tag)
+        for i in xrange(len(new_sent) - 1):
+            tag1, tag2 = new_sent[i][1], new_sent[i + 1][1]  # index 1 is the tag in the tuple of (word, tag)
             trans[TAG2INDEX[tag1]][TAG2INDEX[tag2]] += 1  # tag1 is the i-1'th tag, tag2 is the i'th tag
 
     # to artificially add some exit from STOP tag
@@ -45,7 +49,8 @@ def estimate_transition(train):
     for row in trans:
         row_sum = sum(row)
         for i in xrange(len(row)):
-            row[i] = safe_log(float(row[i]) / row_sum)  # notice log of division for avoiding truncation of floating points
+            row[i] = safe_log(
+                float(row[i]) / row_sum)  # notice log of division for avoiding truncation of floating points
     return trans
 
 
@@ -82,7 +87,7 @@ def viterbi(trans, emission, sentence):
     # now use backpointers to collect the best tags
     current_tag = TAG2INDEX[u"STOP"]
     best_tags = []
-    for k in xrange(len(sentence)-1, -1, -1):
+    for k in xrange(len(sentence) - 1, -1, -1):
         best_tags.insert(0, current_tag)
         current_tag = pi[k][current_tag][1]
 
@@ -98,14 +103,15 @@ def calc_error_rate(train, test):
         print num_words, num_errors
         words_sent = [START] + [word for word, tag in sent] + [STOP]
         v_best_tags = viterbi(trans, emission, words_sent)
-        for i in xrange(1, len(v_best_tags)-1): # to avoid comparing start and stop tags
+        for i in xrange(1, len(v_best_tags) - 1):  # to avoid comparing start and stop tags
             num_words += 1
-            if TAGS[v_best_tags[i]] != sent[i-1][1]:
+            if TAGS[v_best_tags[i]] != sent[i - 1][1]:
                 num_errors += 1
     return num_words, num_errors
+
 
 trans = estimate_transition(train)
 emission = estimate_emission(train)
 
-if __name__ == "__main__":
-    print calc_error_rate(train, test)
+# if __name__ == "__main__":
+#   print calc_error_rate(train, test)

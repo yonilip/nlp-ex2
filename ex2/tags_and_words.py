@@ -10,6 +10,7 @@ train = data[:int(0.9 * len(data))]
 class START(object):
     pass
 
+
 class STOP(object):
     pass
 
@@ -26,5 +27,5 @@ for sent in train:
 TAGS = list(TAGS)
 WORDS = list(WORDS)
 
-TAG2INDEX = {tag : i for i, tag in enumerate(TAGS)}
-WORDS2INDEX = {word : i for i, word in enumerate(WORDS)}
+TAG2INDEX = {tag: i for i, tag in enumerate(TAGS)}
+WORDS2INDEX = {word: i for i, word in enumerate(WORDS)}

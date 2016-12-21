@@ -1,0 +1,56 @@
+README EX2
+----------------------------
+Yuval Globerson 200830321
+Yonatan Lipman 305629750
+----------------------------
+
+Error rates and explanations:
+
+Most-Likely:
+	Error rate for unknown words - 0.79
+	Error rate for known words 0.08
+	Total error rate 0.16
+
+Bigram HMM:
+	Total error rate 0.93
+	This is so high since a sentence with at least one unknown word will be tagged randomly,
+	and most sentences in the test data indeed have unknown words.
+
+Add-One Smoothing:
+	Total error rate 0.29
+
+Pseudo-Words:
+	Total error rate 0.12
+    (This is with Add-One smoothing for the transitions. Smoothing isn't needed for words
+    as low-frequency words are replaced with Pseudo-Words anyway)
+
+    Observing the confusion matrix, the most frequent errors are NN instead NNS (1.6% of all words) and 
+    JJ instead NN (0.6% of all words). Next error types are lower than 0.04%.
+    This is quite reasonable to expect those kinds of errors,
+    since NNS (Plural Noun) and NN have a similar grammatical role.
+    JJ instead NN is less obvious
+
+----------------------------
+
+General explanations regarding code:
+
+All python files (except for the utility files 'tags_and_words.py' and 'pseudo_tags_ands_words.py')
+have the function 'calc_error_rate', which will return a tuple of the number of words parsed and num of errors in
+tagging. Notice that the signature might be different for some of the files.
+
+Also for each file, you will need to call estimate_transmission and estimate_emission on the training set named train.
+
+In any case, the function 'calc_error_rate' represents the proper way to call other functions that are defined in the
+files.
+
+The function 'build_confusion_matrix' in the files 'pseudo_words.py' and 'add_one_smoothing.py' returns the confusion
+matrix as a dict, that each key is a tuple of the tag estimated, and the correct tag, and their values are the number
+of times that this outcome has occurred when working on the test data.
+
+The utility files 'tags_and_words.py' and 'pseudo_tags_ands_words.py' define stub classes START and STOP to represent
+them in sentences. they are appended to the start and end (obviously), and since the class itself is referenced,
+it acts like a singleton. We are applying the same method on the pseudo words classes that replace words that arent
+known.
+We also implemented a dict for getting the index of given tags and words, such that we are able to switch between the
+mapping of index to tag/word and vice versa and effectively use it when creating matrices and dicts that represent
+ either.

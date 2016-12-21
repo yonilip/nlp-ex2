@@ -7,9 +7,9 @@ WORDS = set([])
 THRESHOLD = 1
 
 
-
 def contains_digits(w):
     return any(d.isdigit() for d in w)
+
 
 def contains_alpha(w):
     return any(x.isalpha() for x in w)
@@ -97,10 +97,11 @@ def word2pseudo(w, is_first_word=False):
     else:
         return Other
 
+
 def transform_sentences(train):
     all_words = []
     for sent in train:
-        all_words += [word for word,tag in sent]
+        all_words += [word for word, tag in sent]
     c = Counter(all_words)
     for sent in train:
         for i in xrange(len(sent)):
@@ -115,9 +116,9 @@ test = data[int(0.9 * len(data)):]
 transform_sentences(train)
 
 
-
 class START(object):
     pass
+
 
 class STOP(object):
     pass
@@ -135,5 +136,5 @@ for sent in train:
 TAGS = list(TAGS)
 WORDS = list(WORDS)
 
-TAG2INDEX = {tag : i for i, tag in enumerate(TAGS)}
-WORDS2INDEX = {word : i for i, word in enumerate(WORDS)}
+TAG2INDEX = {tag: i for i, tag in enumerate(TAGS)}
+WORDS2INDEX = {word: i for i, word in enumerate(WORDS)}
