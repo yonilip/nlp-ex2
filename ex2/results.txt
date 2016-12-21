@@ -1,0 +1,14 @@
+Most-Likely:
+	Error rate for unknown words - 0.79
+	Error rate for known words 0.08
+	Total error rate 0.16
+
+Bigram HMM
+	Total error rate 0.93
+	(This is so high since a sentence with at least one unknown word will be tagged randomly)
+
+2. Add-One Smoothing
+	Total error rate 0.29
+
+3. Pseudo-Words
+	Total error rate 0.256
