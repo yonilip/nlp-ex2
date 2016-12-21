@@ -36,8 +36,10 @@ def add_start_and_stop(sent):
 def estimate_transition(train):
     """estimate the transition matrix
     row i column j represents to log-probability of transitions
-    from the i'th tag to the j'th tag"""
-    trans = [[0 for i in xrange(len(TAGS))] for j in xrange(len(TAGS))]
+    from the i'th tag to the j'th tag
+    this implements an Add-One Smoothing on the transition,
+    since some possible transitions do not occur in the training set"""
+    trans = [[1 for i in xrange(len(TAGS))] for j in xrange(len(TAGS))]
     for sent in train:
         new_sent = add_start_and_stop(sent)
         for i in xrange(len(new_sent)-1):
